@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:orientation="vertical">
+    <EditText
+        android:id="@+id/account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:inputType="number"
+        android:hint="@string/account"
+        android:maxLines="1"
+        tools:ignore="Autofill" />
+
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/password"
+        android:textSize="20sp"
+        android:inputType="textPassword"
+        android:maxLines="1"
+        tools:ignore="Autofill" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="right"
+        android:paddingTop="20dp"
+        android:paddingRight="10dp"
+        tools:ignore="RtlHardcoded,RtlSymmetry">
+        <Button
+            android:id="@+id/refresh"
+            android:layout_width="90dp"
+            android:layout_height="50dp"
+            style="?android:attr/buttonStyle"
+            android:text="@string/refresh"/>
+        <Button
+            android:id="@+id/logout"
+            android:layout_width="90dp"
+            android:layout_height="50dp"
+            style="?android:attr/buttonStyle"
+            android:text="@string/logout"/>
+        <Button
+            android:id="@+id/login"
+            android:layout_width="90dp"
+            android:layout_height="50dp"
+            style="?android:attr/buttonStyle"
+            android:text="@string/login"/>
+
+    </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textArea"
+        />
+
+</LinearLayout>
