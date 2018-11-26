@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
@@ -38,10 +39,10 @@ class Info
             public void run() {
                 try {
                     HttpURLConnection conn = (HttpURLConnection) new URL("http://172.16.154.130/cgi-bin/rad_user_info").openConnection();
-                    conn.setReadTimeout(200);
+                    conn.setReadTimeout(500);
                     conn.setRequestMethod("GET");
                     conn.setDoInput(true);
-                    conn.setConnectTimeout(200);
+                    conn.setConnectTimeout(500);
                     int code = conn.getResponseCode();
                     if (code == 200) {
                         InputStream in = conn.getInputStream();
@@ -59,12 +60,18 @@ class Info
                             write(textArea);
                         }
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                }
+                catch (java.net.SocketTimeoutException e)
+                {
+                    textArea.setText("未连接校园网");
+                }
+                catch (Exception e1) {
+                    e1.printStackTrace();
                 }
             }
         }.start();
     }
+    @SuppressLint("SetTextI18n")
     static void write(final TextView textArea)
     {
         if(textArea!=null)
@@ -124,6 +131,10 @@ public class MainActivity extends AppCompatActivity {
                     textArea.setText("当前在线信息：");
                     mLogin.setEnabled(true);
                 }
+                else if(content.contains("User not found"))
+                {
+                    Toast.makeText(getApplicationContext(), "账号不存在", Toast.LENGTH_SHORT).show();
+                }
                 else if(content.contains("LOGOUT failed"))
                 {
                     Toast.makeText(getApplicationContext(), "登出失败", Toast.LENGTH_SHORT).show();
@@ -131,6 +142,10 @@ public class MainActivity extends AppCompatActivity {
                 else if(content.contains("x1"))
                 {
                     Toast.makeText(getApplicationContext(), "认证服务器没有响应", Toast.LENGTH_SHORT).show();
+                }
+                else if(content.contains("x2"))
+                {
+                    Toast.makeText(getApplicationContext(), "未连接至校园网", Toast.LENGTH_SHORT).show();
                 }
                 else if(content.contains("Limit Users Err"))
                 {
@@ -185,19 +200,30 @@ public class MainActivity extends AppCompatActivity {
                             try {
                                 String URL =data.get();
                                 HttpURLConnection conn = (HttpURLConnection) new URL(URL).openConnection();
-                                conn.setReadTimeout(1000);
+                                conn.setReadTimeout(500);
                                 conn.setRequestMethod("POST");
                                 conn.setDoInput(true);
-                                conn.setConnectTimeout(1000);
-                                int code = conn.getResponseCode();
+                                conn.setConnectTimeout(500);
+                                int code;
+                                try {
+                                    code = conn.getResponseCode();
+                                }
+                                catch (SocketTimeoutException e)
+                                {
+                                    code = 1;
+                                }
                                 if (code == 200) {
                                     InputStream in = conn.getInputStream();
                                     String content = StreamTools.readString(in);
                                     showToast(content);
                                 }
-                                else
+                                else if(code == 0)
                                 {
                                     showToast("x1");
+                                }
+                                else if(code == 1)
+                                {
+                                    showToast("x2");
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -205,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }.start();
                 }
-                }
+            }
         });
         mLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -250,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Info.setInfo(textArea);
-                Toast.makeText(getApplicationContext(), "刷新成功",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "已刷新",Toast.LENGTH_SHORT).show();
             }
         });
     }
